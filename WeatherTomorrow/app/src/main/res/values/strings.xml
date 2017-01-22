@@ -1,0 +1,32 @@
+<resources>
+    <!-- Title for the application. [CHAR LIMIT=16] -->
+    <string name="app_name">Weather Tomorrow</string>
+
+    <!-- Text to display in the list when there are no weather date [CHAR LIMIT=NONE] -->
+    <string name="no_forecasts">No forecasts found.</string>
+
+    <!-- Error message when there is no internet connectivity [CHAR LIMIT=NONE] -->
+    <string name="no_internet_connection">No internet connection.</string>
+
+    <!-- Settings Menu Item [CHAR LIMIT=NONE] -->
+    <string name="settings_menu_item">Settings</string>
+
+    <!-- Settings Activity Title [CHAR LIMIT=NONE] -->
+    <string name="settings_title">Weather Settings</string>
+
+    <!-- Weather list separator that displays between temperature in every forecast tile [CHAR LIMIT=3] -->
+    <string name="weather_list_item_separator">...</string>
+
+    <!-- Strings Temperature Unit Preference [CHAR LIMIT=30] -->
+    <string name="settings_temp_unit_label">Temperature unit</string>
+    <string name="settings_temp_unit_key" translatable="false">temp_unit</string>
+    <string name="settings_temp_unit_default" translatable="false">@string/settings_temp_unit_celsius_value</string>
+
+    <!-- Label for Temperature Unit Celsius option [CHAR LIMIT=20] -->
+    <string name="settings_temp_unit_celsius_label">Celsius</string>
+    <string name="settings_temp_unit_celsius_value" translatable="false">metric</string>
+
+    <!-- Label for Temperature Unit Fahrenheit option [CHAR LIMIT=20] -->
+    <string name="settings_temp_unit_fahrenheit_label">Fahrenheit</string>
+    <string name="settings_temp_unit_fahrenheit_value" translatable="false">imperial</string>
+</resources>

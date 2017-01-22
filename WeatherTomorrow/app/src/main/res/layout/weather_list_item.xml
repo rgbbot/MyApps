@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="?android:attr/listPreferredItemHeight"
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingStart="16dp">
+
+    <TextView
+        android:id="@+id/city"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_centerVertical="true"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@android:color/darker_gray"
+        android:textSize="20sp"
+        tools:text="Kiev" />
+
+    <TextView
+        android:id="@+id/temperature_min"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="4dp"
+        android:layout_toLeftOf="@+id/separator"
+        android:layout_centerVertical="true"
+        android:textColor="@color/colorAccent"
+        android:textSize="20sp"
+        tools:text="-20" />
+    <TextView
+        android:id="@+id/separator"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_toLeftOf="@+id/temperature_max"
+        android:layout_centerVertical="true"
+        android:textColor="@color/darkGrey"
+        android:textSize="20sp"
+        android:text="@string/weather_list_item_separator" />
+    <TextView
+        android:id="@+id/temperature_max"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="4dp"
+        android:layout_alignParentEnd="true"
+        android:layout_centerVertical="true"
+        android:textColor="@color/deepOrange"
+        android:textSize="20sp"
+        tools:text="+50" />
+</RelativeLayout>
