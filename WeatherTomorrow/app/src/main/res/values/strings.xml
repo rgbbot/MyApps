@@ -2,6 +2,18 @@
     <!-- Title for the application. [CHAR LIMIT=16] -->
     <string name="app_name">Weather Tomorrow</string>
 
+    <!-- Label for city category of attributes in the editor [CHAR LIMIT=30] -->
+    <string name="category_city">City</string>
+
+    <!-- Text hint for city field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_city">Input city</string>
+
+    <!-- Label for country category of attributes in the editor [CHAR LIMIT=30] -->
+    <string name="category_country">Country</string>
+
+    <!-- Text hint for city field in the editor [CHAR LIMIT=30] -->
+    <string name="hint_country">Input country</string>
+
     <!-- Text to display in the list when there are no weather date [CHAR LIMIT=NONE] -->
     <string name="no_forecasts">No forecasts found.</string>
 
@@ -29,4 +41,61 @@
     <!-- Label for Temperature Unit Fahrenheit option [CHAR LIMIT=20] -->
     <string name="settings_temp_unit_fahrenheit_label">Fahrenheit</string>
     <string name="settings_temp_unit_fahrenheit_value" translatable="false">imperial</string>
+
+    <!-- Text to display in the humidity TextView of each forecast [CHAR LIMIT=10] -->
+    <string name="humidity_text_view">Humidity: </string>
+
+    <!-- Text to display in the wind speed TextView of each forecast [CHAR LIMIT=16] -->
+    <string name="wind_speed_text_view">Wind speed: </string>
+
+    <!-- Unit of measure to display in the wind speed TextView of each forecast [CHAR LIMIT=3] -->
+    <string name="wind_speed_text_view_measure">mps</string>
+
+    <!-- Label for editor menu option to save city and leave editor [CHAR LIMIT=20] -->
+    <string name="action_save">Save</string>
+
+    <!-- Label for editor overflow menu option that deletes the current city [CHAR LIMIT=20] -->
+    <string name="action_delete">Delete</string>
+
+    <!-- Toast message in editor when new city has been successfully inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_forecast_successful">Forecast city saved</string>
+
+    <!-- Toast message in editor when new city has failed to be inserted [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_forecast_failed">Error with saving forecast city</string>
+
+    <!-- Toast message in editor when current city was successfully updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_forecast_successful">Forecast city updated</string>
+
+    <!-- Toast message in editor when current city has failed to be updated [CHAR LIMIT=NONE] -->
+    <string name="editor_update_forecast_failed">Error with updating forecast city</string>
+
+    <!-- Dialog message when user is leaving editor but hasn't saved changes [CHAR LIMIT=NONE] -->
+    <string name="unsaved_changes_dialog_msg">Discard your changes and quit editing?</string>
+
+    <!-- Dialog button text for the option to discard a user's changes [CHAR LIMIT=20] -->
+    <string name="discard">Discard</string>
+
+    <!-- Dialog button text for the option to keep editing the current forecast city [CHAR LIMIT=20] -->
+    <string name="keep_editing">Keep Editing</string>
+
+    <!-- Dialog message to ask the user to confirm deleting the current forecast city [CHAR LIMIT=NONE] -->
+    <string name="delete_dialog_msg">Delete this pet?</string>
+
+    <!-- Dialog button text for the option to confirm deleting the current forecast city [CHAR LIMIT=20] -->
+    <string name="delete">Delete</string>
+
+    <!-- Dialog button text for the option to cancel deletion of the current forecast city [CHAR LIMIT=20] -->
+    <string name="cancel">Cancel</string>
+
+    <!-- Toast message in editor when current forecast city was successfully deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_forecast_successful">Forecast city deleted</string>
+
+    <!-- Toast message in editor when current forecast city has failed to be deleted [CHAR LIMIT=NONE] -->
+    <string name="editor_delete_forecast_failed">Error with forecast city</string>
+
+    <!-- Title for the activity to add a new forecast city [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_new_forecast">Add a Forecast</string>
+
+    <!-- Title for the activity to edit an existing forecast city [CHAR LIMIT=20] -->
+    <string name="editor_activity_title_edit_forecast">Edit Forecast</string>
 </resources>

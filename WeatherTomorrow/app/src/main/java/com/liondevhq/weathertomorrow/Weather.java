@@ -13,17 +13,36 @@ public class Weather {
     /** Website URL of the Weather */
     private String mUrl;
 
+    /** Humidity of the Weather */
+    private int mHumidity;
+
+    /** Id of the Weather */
+    private String mId;
+
+    /** Description of the Weather */
+    private String mDescription;
+
+    /** Wind speed of the Weather */
+    private double mWindSpeed;
+
     /**
-     * Constructs a new {@link Weather} object.
-     *
-     * @param city is the city for forecast
-     * @param temperature is the temperature for city
-     * @param url is the website URL to find more details about the weather forecast
+     * Creates new {@link Weather} object
+     * @param city
+     * @param temperature
+     * @param url
+     * @param humidity
+     * @param id
+     * @param description
+     * @param windSpeed
      */
-    public Weather(String city, String temperature, String url) {
+    public Weather(String city, String temperature, String url, int humidity, String id, String description, double windSpeed) {
         mCity = city;
         mTemp = temperature;
         mUrl = url;
+        mHumidity = humidity;
+        mId = id;
+        mDescription = description;
+        mWindSpeed = windSpeed;
     }
 
     /**
@@ -45,5 +64,33 @@ public class Weather {
      */
     public String getUrl() {
         return mUrl;
+    }
+
+    /**
+     * Returns the humidity of current forecast.
+     */
+    public int getHumidity() {
+        return mHumidity;
+    }
+
+    /**
+     * Returns the id of current forecast.
+     */
+    public String getIdWeather() {
+        return mId;
+    }
+
+    /**
+     * Returns the description of current forecast.
+     */
+    public String getDescription() {
+        return mDescription;
+    }
+
+    /**
+     * Returns the wind speed of current forecast.
+     */
+    public double getWindSpeed() {
+        return mWindSpeed;
     }
 }

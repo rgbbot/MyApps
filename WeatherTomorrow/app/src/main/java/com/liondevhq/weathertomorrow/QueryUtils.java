@@ -15,13 +15,17 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper methods related to requesting and receiving forecasts data from OpenWeatherMap.
@@ -150,6 +154,20 @@ public final class QueryUtils {
         return output.toString();
     }
 
+    /***
+     * Round double value to a number of places
+     * @param value - double number
+     * @param places - places to be left
+     * @return - rounded value
+     */
+    private static double round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(value);
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.doubleValue();
+    }
+
     /**
      * Return a list of {@link Weather} objects that has been built up from
      * parsing the given JSON response.
@@ -249,37 +267,107 @@ public final class QueryUtils {
                     break;
             }
 
-            //Get every quoter of tomorrow day to fetch it's min and max temperature
+            //Get every quoter of tomorrow's day to fetch it's min and max temperature
             double minTemp = 1000.0;
             double maxTemp = -1000.0;
+
+            //Humidity sum holder
+            double humiditySum = 0;
+
+            //Wind speed sum holder
+            double windSpeedSum = 0;
+
+            //Id mapping
+            HashMap<String, Integer> idMap = new HashMap<String, Integer>();
+
+            //Description mapping
+            HashMap<String, Integer> descriptionMap = new HashMap<String, Integer>();
+
             for (int i = counterFrom; i <= counterTo; i++) {
-                // Get a single weather forecast of min temperature of current quoter
-                JSONObject minWeather = weatherArray.getJSONObject(i);
+                // Get a single weather forecast of current quoter
+                JSONObject weatherArrayJSONObject = weatherArray.getJSONObject(i);
 
                 //Extract object from list called "main"
-                JSONObject mainInfoFromListObjectMin = minWeather.getJSONObject("main");
+                JSONObject mainInfoFromListObject = weatherArrayJSONObject.getJSONObject("main");
 
                 // Extract the value for the key called "temp_min"
-                double min = mainInfoFromListObjectMin.getDouble("temp_min");
+                double min = mainInfoFromListObject.getDouble("temp_min");
 
                 //Compare initial min value and the min value from JSON
                 //Then assign min value to a minTemp variable
                 minTemp = Math.min(min, minTemp);
 
-
-                // Get a single weather forecast of max temperature of current quoter
-                JSONObject maxWeather = weatherArray.getJSONObject(i);
-
-                //Extract object from list called "main"
-                JSONObject mainInfoFromListObjectMax = maxWeather.getJSONObject("main");
-
                 // Extract the value for the key called "temp_max"
-                double max = mainInfoFromListObjectMax.getDouble("temp_max");
+                double max = mainInfoFromListObject.getDouble("temp_max");
 
                 //Compare initial max value and the max value from JSON
                 //Then assign max value to a maxTemp variable
                 maxTemp = Math.max(max, maxTemp);
+
+                //Humidity addition
+                double humidityObject = mainInfoFromListObject.getDouble("humidity");
+                humiditySum += humidityObject;
+
+
+
+                //Extract array from list called "weather"
+                JSONArray weatherArrayInfoFromListObject = weatherArrayJSONObject.getJSONArray("weather");
+                //Zero object
+                JSONObject zeroObject = weatherArrayInfoFromListObject.getJSONObject(0);
+                //Get id of current weather
+                String IdObject = zeroObject.getString("id");
+
+                //Insert id value to the map if it exists
+                Integer countId = 0;
+                if (idMap.containsKey(IdObject)) {
+                    idMap.put(IdObject, countId + 1);
+                } else {
+                    idMap.put(IdObject, 1);
+                }
+                //Get description of current weather
+                String descriptionObject = zeroObject.getString("description");
+
+                //Insert description value to the map if it exists
+                Integer countDescription = 0;
+                if (descriptionMap.containsKey(descriptionObject)) {
+                    descriptionMap.put(descriptionObject, countDescription + 1);
+                } else {
+                    descriptionMap.put(descriptionObject, 1);
+                }
+
+
+                //Extract object from list called "wind"
+                JSONObject windInfoFromListObject = weatherArrayJSONObject.getJSONObject("wind");
+
+                //Wind speed addition
+                double windSpeedObject = windInfoFromListObject.getDouble("speed");
+                windSpeedSum += windSpeedObject;
+
             }
+
+            //Final humidity average value
+            double humidityValue = humiditySum/counterTo;
+
+            //Final id extraction based on most repeated value
+            Map.Entry<String, Integer> maxIdEntry = null;
+            for (Map.Entry<String, Integer> entry1 : idMap.entrySet()) {
+                if (maxIdEntry == null || (entry1.getValue() > maxIdEntry.getValue())) {
+                    maxIdEntry = entry1;
+                }
+            }
+
+            //Final description extraction based on most repeated value
+            Map.Entry<String, Integer> maxDescEntry = null;
+            for (Map.Entry<String, Integer> entry2 : descriptionMap.entrySet()) {
+                if (maxDescEntry == null || (entry2.getValue() > maxDescEntry.getValue())) {
+                    maxDescEntry = entry2;
+                }
+            }
+
+            //Final wind speed average value
+            double windSpeedValue = windSpeedSum/counterTo;
+
+
 
             /** Here I generate final data to create Weather object **/
 
@@ -289,12 +377,25 @@ public final class QueryUtils {
             //Form forecast temperature for an Weather future object creation
             String forecastTemperature = minTemp + "/" + maxTemp;
 
-            // Form url for an Weather future object creation
+            //Form url for an Weather future object creation
             String url = BASE_URL + cityId;
+
+            //Round humidity for an Weather future object creation
+            int humidity = (int) Math.round(humidityValue);
+
+            //Extract id from map
+            String id = maxIdEntry.getKey();
+
+            //Extract description from map
+            String description = maxDescEntry.getKey();
+
+            double windSpeed = round(windSpeedValue, 2);
+
+            //TODO: Provide icon fetching based on id received
 
             // Create a new {@link Weather} object with the forecastCity, forecastTemperature,
             // and url from the JSON response.
-            Weather weather = new Weather(forecastCity, forecastTemperature, url);
+            Weather weather = new Weather(forecastCity, forecastTemperature, url, humidity, id, description, windSpeed);
 
             // Assign the new {@link Weather}.
             weatherObject = weather;

@@ -25,6 +25,20 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.liondevhq.weathertomorrow.WeatherActivity"/>
         </activity>
+
+        <activity
+            android:name=".EditorActivity"
+            android:theme="@style/EditorTheme"
+            android:parentActivityName=".WeatherActivity" >
+            <!-- Parent activity meta-data to support 4.0 and lower -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".WeatherActivity" />
+        </activity>
+        <provider
+            android:name=".data.WeatherProvider"
+            android:authorities="com.liondevhq.weathertomorrow"
+            android:exported="false" />
     </application>
 
 </manifest>

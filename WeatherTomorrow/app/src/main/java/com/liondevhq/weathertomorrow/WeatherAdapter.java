@@ -94,6 +94,25 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
         //Set the color to min temperature TextView
         temperatureMaxView.setTextColor(ContextCompat.getColor(temperatureMaxView.getContext(), maxTempTextColor));
 
+        // Find the TextView with view ID humidity
+        TextView humidityView = (TextView) listItemView.findViewById(R.id.humidity);
+        // Form humidity text for the TextView
+        String humidityFullText = this.getContext().getResources().getString(R.string.humidity_text_view) + currentWeather.getHumidity() + "%";
+        // Display the humidity of the current weather object in that TextView
+        humidityView.setText(humidityFullText);
+
+        // Find the TextView with view ID weather_description
+        TextView descriptionView = (TextView) listItemView.findViewById(R.id.weather_description);
+        // Display the description of the current weather object in that TextView
+        descriptionView.setText(currentWeather.getDescription());
+
+        // Find the TextView with view ID humidity
+        TextView windSpeedView = (TextView) listItemView.findViewById(R.id.wind_speed);
+        // Form wind speed text for the TextView
+        String windSpeedFullText = this.getContext().getResources().getString(R.string.wind_speed_text_view) + String.valueOf(currentWeather.getWindSpeed()) + this.getContext().getResources().getString(R.string.wind_speed_text_view_measure);
+        // Display the humidity of the current weather object in that TextView
+        windSpeedView.setText(windSpeedFullText);
+
         // Return the list item view that is now showing the appropriate data
         return listItemView;
     }

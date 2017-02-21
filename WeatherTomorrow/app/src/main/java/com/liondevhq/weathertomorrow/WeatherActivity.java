@@ -10,6 +10,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.preference.PreferenceManager;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -24,6 +25,9 @@ import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderCallbacks<List<Weather>>,
         SharedPreferences.OnSharedPreferenceChangeListener {
+
+    //TODO: 1) Change List of cities to SQL DB
+    //TODO: 2) Refresh view when city forecast adds from editor
 
     private static final String LOG_TAG = WeatherActivity.class.getName();
 
@@ -47,6 +51,16 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.weather_activity);
+
+        // Setup FAB to open EditorActivity
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(WeatherActivity.this, EditorActivity.class);
+                startActivity(intent);
+            }
+        });
 
         // Find a reference to the {@link ListView} in the layout
         ListView weatherListView = (ListView) findViewById(R.id.list);
