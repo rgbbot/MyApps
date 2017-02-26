@@ -30,6 +30,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     /** Identifier for the forecast city data loader */
     private static final int EXISTING_WEATHER_LOADER = 0;
+    public static final int COUNTRY_STRING_LEGAL_LENGTH = 2;
 
     /** Boolean flag that keeps track of whether the city has been edited (true) or not (false) */
     private boolean mCityHasChanged = false;
@@ -167,8 +168,29 @@ public class EditorActivity extends AppCompatActivity implements
         // Read from input fields
         // Use trim to eliminate leading or trailing white space
         String cityString = mCityEditText.getText().toString().trim();
-        String countryString = mCountryEditText.getText().toString().trim();
+        String countryString = mCountryEditText.getText().toString().trim().toLowerCase();
 
+        //Reset values if there are any empty strings or length of countryString != 2
+        if (cityString.length() == 0){
+            cityString = "";
+            countryString = "";
+            Toast.makeText(this, getString(R.string.editor_insert_forecast_failed_city_empty),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        if (countryString.length() == 0){
+            cityString = "";
+            countryString = "";
+            Toast.makeText(this, getString(R.string.editor_insert_forecast_failed_country_empty),
+                    Toast.LENGTH_SHORT).show();
+        }
+
+        if (countryString.length() != COUNTRY_STRING_LEGAL_LENGTH){
+            cityString = "";
+            countryString = "";
+            Toast.makeText(this, getString(R.string.editor_insert_forecast_failed_country_illegal),
+                    Toast.LENGTH_SHORT).show();
+        }
         // Check if this is supposed to be a new forecast city
         // and check if all the fields in the editor are blank
         if (mCurrentCityUri == null &&
@@ -261,7 +283,7 @@ public class EditorActivity extends AppCompatActivity implements
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
                 // User clicked the "Delete" button, so delete the pet.
-                deletePet();
+                deleteForecast();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -281,7 +303,7 @@ public class EditorActivity extends AppCompatActivity implements
 
     @Override
     public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
-        // Since the editor shows all pet attributes, define a projection that contains
+        // Since the editor shows all forecast attributes, define a projection that contains
         // all columns from the forecast cities table
         String[] projection = {
                 WeatherContract.WeatherEntry._ID,
@@ -331,7 +353,7 @@ public class EditorActivity extends AppCompatActivity implements
     /**
      * Perform the deletion of the forecast city in the database.
      */
-    private void deletePet() {
+    private void deleteForecast() {
         // Only perform the delete if this is an existing forecast city.
         if (mCurrentCityUri != null) {
             // Call the ContentResolver to delete the forecast city at the given content URI.

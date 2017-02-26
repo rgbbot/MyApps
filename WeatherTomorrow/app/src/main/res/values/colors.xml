@@ -2,7 +2,7 @@
 <resources>
     <color name="colorPrimary">#ff5722</color>
     <color name="colorPrimaryDark">#e64a19</color>
-    <color name="colorAccent">#03a9f4</color>
+    <color name="colorAccent">#e65100</color>
     <color name="darkGrey">#a9a9a9</color>
     <color name="deepOrange">#FFA500</color>
 
@@ -11,4 +11,8 @@
 
     <!-- Primary dark color for the editor -->
     <color name="editorColorPrimaryDark">#394450</color>
+
+    <!-- Color for below zero temp -->
+    <color name="colorLowTemp">#00b0ff</color>
+
 </resources>

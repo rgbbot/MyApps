@@ -123,7 +123,7 @@ public class WeatherAdapter extends ArrayAdapter<Weather> {
     private int getTextColor(int formattedTempValueInt) {
         int temperatureColorResourceId;
         if (formattedTempValueInt < 0) {
-            temperatureColorResourceId = R.color.colorAccent;
+            temperatureColorResourceId = R.color.colorLowTemp;
         } else if (formattedTempValueInt == 0) {
             temperatureColorResourceId = R.color.darkGrey;
         } else {

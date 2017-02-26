@@ -6,13 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,14 +23,24 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.liondevhq.weathertomorrow.data.WeatherContract;
+import com.liondevhq.weathertomorrow.data.WeatherDbHelper;
+
 import java.util.ArrayList;
 import java.util.List;
 
 public class WeatherActivity extends AppCompatActivity implements LoaderCallbacks<List<Weather>>,
         SharedPreferences.OnSharedPreferenceChangeListener {
 
-    //TODO: 1) Change List of cities to SQL DB
-    //TODO: 2) Refresh view when city forecast adds from editor
+    /*
+        TODO: 1) Delete all - DONE
+        TODO: 2) Refresh when delete all - DONE
+        TODO: 3) Change color of FAB - DONE
+        TODO: 4) Create menu for new sql features - DONE
+        TODO: 5) Edit item on click and hold
+        TODO: 6) Check DB requests for 1 item
+        TODO: 7) Change Editor Activity depending on editing or adding item
+     */
 
     private static final String LOG_TAG = WeatherActivity.class.getName();
 
@@ -46,6 +59,22 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
 
     /** TextView that is displayed when the list is empty */
     private TextView mEmptyStateTextView;
+
+    /** Database with weather cities data */
+    private WeatherDbHelper mDbHelper;
+    private SQLiteDatabase mDb;
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(WEATHER_LOADER_ID, null, this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        getLoaderManager().restartLoader(WEATHER_LOADER_ID, null, this);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -127,6 +156,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         }
     }
 
+    /**
+     * Helper method to delete all forecasts in the database.
+     */
+    private void deleteAllForecasts() {
+        int rowsDeleted = getContentResolver().delete(WeatherContract.WeatherEntry.CONTENT_URI, null, null);
+        Log.v("CatalogActivity", rowsDeleted + " rows deleted from pet database");
+    }
+
     @Override
     public void onSharedPreferenceChanged(SharedPreferences prefs, String key) {
         if (key.equals(getString(R.string.settings_temp_unit_key))){
@@ -153,26 +190,44 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
                 getString(R.string.settings_temp_unit_key),
                 getString(R.string.settings_temp_unit_default));
 
-        //List for storing built URIs
+        // List for storing built URIs
         List<String> uriList = new ArrayList<>();
-
-        /*** ATTENTION
-         *
-         * Here we input cities for which we want to see the forecast
-         *
-         * There are no limits to the amount of cities
-         * You have only add the to list "cities" value with appropriate city
-         *
-         * The full list of cities you can get from http://bulk.openweathermap.org/sample/ (city.list.json.gz)
-         * Or just visit site, find your city using search results and get info from there
-         *
-         * ***/
-
+        // List for storing forecast cities
         List<String> cities = new ArrayList<>();
-        cities.add("London,uk");
-        cities.add("Kiev,ua");
-        cities.add("Berlin,de");
-        cities.add("Dubai,ae");
+
+        /*
+          TODO: Get rid of sql query on main thread START
+         */
+        // Define a projection that specifies the columns from the table we care about.
+        String[] projection = {
+                WeatherContract.WeatherEntry._ID,
+                WeatherContract.WeatherEntry.COLUMN_WEATHER_CITY,
+                WeatherContract.WeatherEntry.COLUMN_WEATHER_COUNTRY };
+
+        //Cursor for getting data from DB
+        mDbHelper = new WeatherDbHelper(this);
+        mDb = mDbHelper.getReadableDatabase();
+
+
+        Cursor forecastCitiesDataCursor = mDb.query(true, WeatherContract.WeatherEntry.TABLE_NAME, projection,
+                null, null, null,
+                null, null, null);
+
+        if (forecastCitiesDataCursor.moveToFirst()){
+            do{
+                String city = forecastCitiesDataCursor.getString(forecastCitiesDataCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_CITY));
+                String country = forecastCitiesDataCursor.getString(forecastCitiesDataCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_COUNTRY));
+
+                String full = city + "," + country;
+
+                cities.add(full);
+            }while(forecastCitiesDataCursor.moveToNext());
+        }
+        forecastCitiesDataCursor.close();
+
+        /*
+         TODO: Get rid of sql query on main thread END
+         */
 
         //For each city in the list generate URI and put it in the URIs list
         for (String city : cities){
@@ -217,17 +272,33 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.menu_activity, menu);
         return true;
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-            startActivity(settingsIntent);
-            return true;
+//        int id = item.getItemId();
+//        if (id == R.id.action_settings) {
+//            Intent settingsIntent = new Intent(this, SettingsActivity.class);
+//            startActivity(settingsIntent);
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+
+        // User clicked on a menu option in the app bar overflow menu
+        switch (item.getItemId()) {
+            // Respond to a click on the "Settings" menu option
+            case R.id.action_settings:
+                Intent settingsIntent = new Intent(this, SettingsActivity.class);
+                startActivity(settingsIntent);
+                return true;
+            // Respond to a click on the "Delete all entries" menu option
+            case R.id.action_delete_all_entries:
+                deleteAllForecasts();
+                // Refresh data
+                getLoaderManager().restartLoader(WEATHER_LOADER_ID, null, this);
+                return true;
         }
         return super.onOptionsItemSelected(item);
     }

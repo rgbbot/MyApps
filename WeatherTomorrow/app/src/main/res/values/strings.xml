@@ -63,8 +63,20 @@
     <!-- Toast message in editor when new city has failed to be inserted [CHAR LIMIT=NONE] -->
     <string name="editor_insert_forecast_failed">Error with saving forecast city</string>
 
+    <!-- Toast message in editor when new city has failed to be inserted because of empty string [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_forecast_failed_city_empty">Failed. City name is empty</string>
+
+    <!-- Toast message in editor when new country has failed to be inserted because of empty string [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_forecast_failed_country_empty">Failed. Country code is empty</string>
+
+    <!-- Toast message in editor when new country has length != certain value [CHAR LIMIT=NONE] -->
+    <string name="editor_insert_forecast_failed_country_illegal">Failed. Illegal country code length</string>
+
     <!-- Toast message in editor when current city was successfully updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_forecast_successful">Forecast city updated</string>
+
+    <!-- Label for overflow menu option that deletes all forecasts data in the app [CHAR LIMIT=20] -->
+    <string name="action_delete_all_entries">Delete All Forecasts</string>
 
     <!-- Toast message in editor when current city has failed to be updated [CHAR LIMIT=NONE] -->
     <string name="editor_update_forecast_failed">Error with updating forecast city</string>
