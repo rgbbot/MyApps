@@ -2,6 +2,7 @@ package com.liondevhq.weathertomorrow;
 
 import android.app.LoaderManager;
 import android.app.LoaderManager.LoaderCallbacks;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
@@ -16,6 +17,7 @@ import android.preference.PreferenceManager;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,9 +39,10 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         TODO: 2) Refresh when delete all - DONE
         TODO: 3) Change color of FAB - DONE
         TODO: 4) Create menu for new sql features - DONE
-        TODO: 5) Edit item on click and hold
-        TODO: 6) Check DB requests for 1 item
+        TODO: 5) Edit item on click and hold - DONE
+        TODO: 6) Check DB requests for 1 item - DONE
         TODO: 7) Change Editor Activity depending on editing or adding item
+        TODO: 8) Swap onClick to change and web site to long click
      */
 
     private static final String LOG_TAG = WeatherActivity.class.getName();
@@ -54,8 +57,21 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
      */
     private static final int WEATHER_LOADER_ID = 1;
 
+    /**
+     * Constants that are used in context menu, when user click on forecast
+     * in the list, and represents each menu item id
+     */
+    public static final int EDIT = 0;
+    public static final int WEBSITE = 1;
+
     /** Adapter for the list of forecasts */
     private WeatherAdapter mAdapter;
+
+    /** URI for the current onClicked item */
+    private Uri mCurrentUri;
+    /** Position for the current onClicked item */
+    private int mCurrentPosition;
+
 
     /** TextView that is displayed when the list is empty */
     private TextView mEmptyStateTextView;
@@ -103,6 +119,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         // Set the adapter on the {@link ListView}
         // so the list can be populated in the user interface
         weatherListView.setAdapter(mAdapter);
+        registerForContextMenu(weatherListView);
 
         // Obtain a reference to the SharedPreferences file for this app
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
@@ -114,18 +131,14 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         // to open a website with more information about the selected forecast.
         weatherListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                // Find the current forecast that was clicked on
-                Weather currentWeather = mAdapter.getItem(position);
-
-                // Convert the String URL into a URI object (to pass into the Intent constructor)
-                Uri forecastUri = Uri.parse(currentWeather.getUrl());
-
-                // Create a new intent to view the forecast URI
-                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, forecastUri);
-
-                // Send the intent to launch a new activity
-                startActivity(websiteIntent);
+            public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
+                //TODO: provide correct id returning
+                // Save the state of current Uri for the future usage.
+                mCurrentUri =  ContentUris.withAppendedId(WeatherContract.WeatherEntry.CONTENT_URI, id);
+                // Save the state of current position for the future usage.
+                mCurrentPosition = position;
+                // Show context menu on clicked item
+                view.showContextMenu();
             }
         });
 
@@ -154,6 +167,60 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
             // Update empty state with no connection error message
             mEmptyStateTextView.setText(R.string.no_internet_connection);
         }
+    }
+
+
+    //Context menu creation
+    @Override
+    public void onCreateContextMenu(ContextMenu menu, View v,
+                                    ContextMenu.ContextMenuInfo menuInfo) {
+        if (v.getId()==R.id.list) {
+            AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+            int position = info.position;
+            //System.err.println("position: " + position);
+            menu.setHeaderTitle(R.string.weather_activity_context_menu_title);
+            menu.add(Menu.NONE, EDIT, position, R.string.weather_activity_context_edit_menu_item);
+            menu.add(Menu.NONE, WEBSITE, position, R.string.weather_activity_context_website_menu_item);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch (item.getItemId()) {
+            case 0:
+                // Create new intent to go to {@link EditorActivity}
+                Intent intent = new Intent(WeatherActivity.this, EditorActivity.class);
+
+                // Form the content URI that represents the specific forecast that was clicked on,
+                // by appending the "id" (passed as input to this method) onto the
+                // {@link WeatherEntry#CONTENT_URI}.
+                // For example, the URI would be "content://com.com.liondevhq.weathertomorrow/weather/2"
+                // if the forecast with ID 2 was clicked on.
+                Uri currentPetUri = mCurrentUri;
+                //System.err.println(currentPetUri.toString());
+
+                // Set the URI on the data field of the intent
+                intent.setData(currentPetUri);
+
+                // Launch the {@link EditorActivity} to display the data for the current forecast.
+                startActivity(intent);
+                break;
+            case 1:
+                // Find the current forecast that was clicked on
+                Weather currentWeather = mAdapter.getItem(mCurrentPosition);
+
+                // Convert the String URL into a URI object (to pass into the Intent constructor)
+                Uri forecastUri = Uri.parse(currentWeather.getUrl());
+
+                // Create a new intent to view the forecast URI
+                Intent websiteIntent = new Intent(Intent.ACTION_VIEW, forecastUri);
+
+                // Send the intent to launch a new activity
+                startActivity(websiteIntent);
+                break;
+        }
+        return true;
     }
 
     /**

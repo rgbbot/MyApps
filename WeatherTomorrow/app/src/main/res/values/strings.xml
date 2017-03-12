@@ -110,4 +110,13 @@
 
     <!-- Title for the activity to edit an existing forecast city [CHAR LIMIT=20] -->
     <string name="editor_activity_title_edit_forecast">Edit Forecast</string>
+
+    <!-- Title for the weather activity's context menu to edit an existing forecast city [CHAR LIMIT=20] -->
+    <string name="weather_activity_context_menu_title">Edit item?</string>
+
+    <!-- Title for the weather activity's context edit menu item to edit an existing forecast city [CHAR LIMIT=20] -->
+    <string name="weather_activity_context_edit_menu_item">Edit</string>
+
+    <!-- Title for the weather activity's context website menu item to edit an existing forecast city [CHAR LIMIT=20] -->
+    <string name="weather_activity_context_website_menu_item">Go to website</string>
 </resources>
