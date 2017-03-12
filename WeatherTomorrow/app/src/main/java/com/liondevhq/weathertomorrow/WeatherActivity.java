@@ -39,8 +39,8 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         TODO: 4) Create menu for new sql features - DONE
         TODO: 5) Edit item on click and hold - DONE
         TODO: 6) Check DB requests for 1 item - DONE
-        TODO: 7) Change Editor Activity depending on editing or adding item
-        TODO: 8) Swap onClick to change and web site to long click
+        TODO: 7) Change Editor Activity depending on editing or adding item - DONE
+        TODO: 8) Make onClick to edit and web site - DONE
      */
 
     private static final String LOG_TAG = WeatherActivity.class.getName();
@@ -122,7 +122,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         weatherListView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
-                //TODO: provide correct id returning
+                //TODO: provide correct id returning - DONE
                 int idDb = mAdapter.getItem(position).getIdDB();
                 // Save the state of current Uri for the future usage.
                 mCurrentUri =  ContentUris.withAppendedId(WeatherContract.WeatherEntry.CONTENT_URI, idDb);

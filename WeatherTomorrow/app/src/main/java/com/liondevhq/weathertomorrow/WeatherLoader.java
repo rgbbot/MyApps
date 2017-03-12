@@ -9,8 +9,10 @@ import android.net.Uri;
 import com.liondevhq.weathertomorrow.data.WeatherContract;
 import com.liondevhq.weathertomorrow.data.WeatherDbHelper;
 
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by pc on 21.01.2017.
@@ -108,8 +110,16 @@ public class WeatherLoader extends AsyncTaskLoader<List<Weather>> {
             return null;
         }
 
+        // Map for storing final forecast data
+        Map<String,Integer> forecastDataMap = new LinkedHashMap<>();
+
+        // Insert values to the map
+        for (int i = 0; i < uriList.size(); i++) {
+            forecastDataMap.put(uriList.get(i), idDbList.get(i));
+        }
+
         // Perform the network request, parse the response, and extract a list of forecasts.
-        List<Weather> forecasts = QueryUtils.fetchForecastData(uriList, idDbList);
+        List<Weather> forecasts = QueryUtils.fetchForecastData(forecastDataMap);
         return forecasts;
     }
 

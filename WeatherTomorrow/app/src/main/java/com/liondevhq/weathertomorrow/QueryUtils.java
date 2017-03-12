@@ -50,16 +50,15 @@ public final class QueryUtils {
     /**
      * Query the OpenWeatherMap dataset and return a list of {@link Weather} objects.
      */
-    public static List<Weather> fetchForecastData(List<String> requestUrlList, List<Integer> idDbList) {
-        //Counter for the every object processing
-        int counterFetchElement = 0;
+    public static List<Weather> fetchForecastData(Map<String, Integer> requestUrlList) {
+
         //Create list for holding elements that come back from HTTP request
         List<Weather> weatherList = new ArrayList<>();
 
         //For every income url create URL object, perform HTTP request and receive a JSON response back
-        for (String requestUrl : requestUrlList) {
+        for (Map.Entry<String,Integer> entry : requestUrlList.entrySet()) {
             // Create URL object
-            URL url = createUrl(requestUrl);
+            URL url = createUrl(entry.getKey());
 
             // Perform HTTP request to the URL and receive a JSON response back
             String jsonResponse = null;
@@ -70,12 +69,10 @@ public final class QueryUtils {
             }
 
             // Extract relevant fields from the JSON response and create a {@link Weather} object
-            Weather weather = extractFeatureFromJson(jsonResponse, idDbList.get(counterFetchElement));
+            Weather weather = extractFeatureFromJson(jsonResponse, entry.getValue());
 
             //Add received weather object to list
             weatherList.add(weather);
-
-            counterFetchElement++;
         }
 
         // Return the list of {@link Weather} objects
