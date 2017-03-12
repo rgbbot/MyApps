@@ -7,8 +7,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -26,7 +24,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.liondevhq.weathertomorrow.data.WeatherContract;
-import com.liondevhq.weathertomorrow.data.WeatherDbHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +32,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
         SharedPreferences.OnSharedPreferenceChangeListener {
 
     /*
+        TODO: 0) Get rid of SQL query on the main thread - DONE
         TODO: 1) Delete all - DONE
         TODO: 2) Refresh when delete all - DONE
         TODO: 3) Change color of FAB - DONE
@@ -46,10 +44,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
      */
 
     private static final String LOG_TAG = WeatherActivity.class.getName();
-
-    /** URL for forecast data from the OpenWeatherMap dataset */
-    private static final String OWM_REQUEST_URL =
-            "http://api.openweathermap.org/data/2.5/forecast";
 
     /**
      * Constant value for the weather loader ID. We can choose any integer.
@@ -75,10 +69,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
 
     /** TextView that is displayed when the list is empty */
     private TextView mEmptyStateTextView;
-
-    /** Database with weather cities data */
-    private WeatherDbHelper mDbHelper;
-    private SQLiteDatabase mDb;
 
     @Override
     protected void onResume() {
@@ -133,8 +123,9 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int position, long id) {
                 //TODO: provide correct id returning
+                int idDb = mAdapter.getItem(position).getIdDB();
                 // Save the state of current Uri for the future usage.
-                mCurrentUri =  ContentUris.withAppendedId(WeatherContract.WeatherEntry.CONTENT_URI, id);
+                mCurrentUri =  ContentUris.withAppendedId(WeatherContract.WeatherEntry.CONTENT_URI, idDb);
                 // Save the state of current position for the future usage.
                 mCurrentPosition = position;
                 // Show context menu on clicked item
@@ -257,59 +248,7 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
                 getString(R.string.settings_temp_unit_key),
                 getString(R.string.settings_temp_unit_default));
 
-        // List for storing built URIs
-        List<String> uriList = new ArrayList<>();
-        // List for storing forecast cities
-        List<String> cities = new ArrayList<>();
-
-        /*
-          TODO: Get rid of sql query on main thread START
-         */
-        // Define a projection that specifies the columns from the table we care about.
-        String[] projection = {
-                WeatherContract.WeatherEntry._ID,
-                WeatherContract.WeatherEntry.COLUMN_WEATHER_CITY,
-                WeatherContract.WeatherEntry.COLUMN_WEATHER_COUNTRY };
-
-        //Cursor for getting data from DB
-        mDbHelper = new WeatherDbHelper(this);
-        mDb = mDbHelper.getReadableDatabase();
-
-
-        Cursor forecastCitiesDataCursor = mDb.query(true, WeatherContract.WeatherEntry.TABLE_NAME, projection,
-                null, null, null,
-                null, null, null);
-
-        if (forecastCitiesDataCursor.moveToFirst()){
-            do{
-                String city = forecastCitiesDataCursor.getString(forecastCitiesDataCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_CITY));
-                String country = forecastCitiesDataCursor.getString(forecastCitiesDataCursor.getColumnIndex(WeatherContract.WeatherEntry.COLUMN_WEATHER_COUNTRY));
-
-                String full = city + "," + country;
-
-                cities.add(full);
-            }while(forecastCitiesDataCursor.moveToNext());
-        }
-        forecastCitiesDataCursor.close();
-
-        /*
-         TODO: Get rid of sql query on main thread END
-         */
-
-        //For each city in the list generate URI and put it in the URIs list
-        for (String city : cities){
-            Uri baseUri = Uri.parse(OWM_REQUEST_URL);
-            Uri.Builder uriBuilder = baseUri.buildUpon();
-
-            uriBuilder.appendQueryParameter("q", city);
-            uriBuilder.appendQueryParameter("cnt", "16");
-            uriBuilder.appendQueryParameter("units", tempUnit);
-            uriBuilder.appendQueryParameter("appid", "031d20c5934f7a1edd29b1bcfe6c4874");
-
-            uriList.add(uriBuilder.toString());
-        }
-
-        return new WeatherLoader(this, uriList);
+        return new WeatherLoader(this, tempUnit);
     }
 
     @Override
@@ -345,13 +284,6 @@ public class WeatherActivity extends AppCompatActivity implements LoaderCallback
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-//        int id = item.getItemId();
-//        if (id == R.id.action_settings) {
-//            Intent settingsIntent = new Intent(this, SettingsActivity.class);
-//            startActivity(settingsIntent);
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
 
         // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {

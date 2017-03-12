@@ -4,6 +4,10 @@ package com.liondevhq.weathertomorrow;
  * Created by pc on 21.01.2017.
  */
 public class Weather {
+
+    /** Database Id of the Weather */
+    private int mIdDB;
+
     /** City for the forecast */
     private String mCity;
 
@@ -27,6 +31,7 @@ public class Weather {
 
     /**
      * Creates new {@link Weather} object
+     * @param idDB
      * @param city
      * @param temperature
      * @param url
@@ -35,7 +40,8 @@ public class Weather {
      * @param description
      * @param windSpeed
      */
-    public Weather(String city, String temperature, String url, int humidity, String id, String description, double windSpeed) {
+    public Weather(int idDB, String city, String temperature, String url, int humidity, String id, String description, double windSpeed) {
+        mIdDB = idDB;
         mCity = city;
         mTemp = temperature;
         mUrl = url;
@@ -43,6 +49,13 @@ public class Weather {
         mId = id;
         mDescription = description;
         mWindSpeed = windSpeed;
+    }
+
+    /**
+     * Returns the database id of the current forecast.
+     */
+    public int getIdDB() {
+        return mIdDB;
     }
 
     /**

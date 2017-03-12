@@ -50,8 +50,9 @@ public final class QueryUtils {
     /**
      * Query the OpenWeatherMap dataset and return a list of {@link Weather} objects.
      */
-    public static List<Weather> fetchForecastData(List<String> requestUrlList) {
-
+    public static List<Weather> fetchForecastData(List<String> requestUrlList, List<Integer> idDbList) {
+        //Counter for the every object processing
+        int counterFetchElement = 0;
         //Create list for holding elements that come back from HTTP request
         List<Weather> weatherList = new ArrayList<>();
 
@@ -69,10 +70,12 @@ public final class QueryUtils {
             }
 
             // Extract relevant fields from the JSON response and create a {@link Weather} object
-            Weather weather = extractFeatureFromJson(jsonResponse);
+            Weather weather = extractFeatureFromJson(jsonResponse, idDbList.get(counterFetchElement));
 
             //Add received weather object to list
             weatherList.add(weather);
+
+            counterFetchElement++;
         }
 
         // Return the list of {@link Weather} objects
@@ -172,7 +175,7 @@ public final class QueryUtils {
      * Return a list of {@link Weather} objects that has been built up from
      * parsing the given JSON response.
      */
-    private static Weather extractFeatureFromJson(String weatherJSON) {
+    private static Weather extractFeatureFromJson(String weatherJSON, int idDB) {
         // If the JSON string is empty or null, then return early.
         if (TextUtils.isEmpty(weatherJSON)) {
             return null;
@@ -395,7 +398,7 @@ public final class QueryUtils {
 
             // Create a new {@link Weather} object with the forecastCity, forecastTemperature,
             // and url from the JSON response.
-            Weather weather = new Weather(forecastCity, forecastTemperature, url, humidity, id, description, windSpeed);
+            Weather weather = new Weather(idDB, forecastCity, forecastTemperature, url, humidity, id, description, windSpeed);
 
             // Assign the new {@link Weather}.
             weatherObject = weather;
